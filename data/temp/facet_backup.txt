@@ -1,0 +1,1 @@
+{"100632": "Mom & Baby", "100629": "Food & Beverage", "100630": "Beauty", "100001": "Health", "100631": "Pets", "100636": "Home & Living", "100640": "Automobiles"}
