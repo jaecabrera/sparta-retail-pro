@@ -92,6 +92,7 @@ class TransformerPipe:
             j += 1
 
         pages = [*flatten(pages)]
+
         return self.df.assign(item_page=pages)
 
     def create_cat_names(self):

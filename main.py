@@ -24,6 +24,8 @@ DATE_COLLECTION_PATH = Path(os.getenv("DATE_COLLECTION_PATH"))
 PARQUET_PATH = Path(os.getenv("PARQUET_PATH"))
 # json path / contains the dataframe used for business-requirements analytics
 JSON_PATH = Path(os.getenv("JSON_PATH"))
+# temp path /
+TEMP_PATH = Path(os.getenv("TEMP_PATH"))
 
 
 @flow(log_prints=True)
@@ -57,15 +59,15 @@ def start_extract():
 @task
 def notify_email():
     print('email-notified')
-    # email_params = EmailParams(subject="Lagoon: Market Report")
-    # data_table = get_facet(script_path=SCRIPT_CWD)
-    # send_emails(email_params, data_table)
+    email_params = EmailParams(subject="Lagoon: Market Report")
+    data_table = get_facet(TEMP_PATH)
+    send_emails(email_params, data_table)
 
 
 @flow()
 def transform():
     # clean_dates()
-    # clean_transform_dates()
+    clean_transform_dates()
     prep_requirements()
 
 
@@ -122,7 +124,8 @@ def clean_transform_dates():
 @task
 def prep_requirements():
     analytics_df = transform_analytics(PARQUET_PATH)
-    analytics_df.to_csv("data/analytics/client_pepsi_quaker.csv")
+    analytics_df.to_csv("data/analytics/client_pepsi_coke.csv")
+    ic(analytics_df.brand.value_counts())
     print("[Tableau Linked] Analytics data successfully created.")
 
 

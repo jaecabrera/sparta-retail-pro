@@ -15,7 +15,7 @@ load_dotenv('../.env')
 TEMP_PATH = Path(os.getenv("TEMP_PATH"))
 
 
-def get_facet(script_path) -> pd.DataFrame:
+def get_facet(temp_path) -> pd.DataFrame:
     """
     :description:
         To load json file from newly acquired data
@@ -24,10 +24,10 @@ def get_facet(script_path) -> pd.DataFrame:
     # Load path defaults and get temporary data path
 
     # Get a list of all files in the folder
-    table = [f.name for f in Path.iterdir(TEMP_PATH) \
+    table = [f.name for f in Path.iterdir(temp_path) \
              if f.suffix == '.json' and f.name.startswith(f"{sgtz()[:8]}")]
 
-    table_facet = pd.read_json(TEMP_PATH / table[0])
+    table_facet = pd.read_json(temp_path / table[0])
     return table_facet
 
 
