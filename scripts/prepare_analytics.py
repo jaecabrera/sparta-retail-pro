@@ -105,7 +105,7 @@ def create_product_name(df: pd.DataFrame, data_business_key: str):
         df_filtered['product_name'] = [pepsi_products[0] if re.search(pepsi_products[0], i) else "Pepsi Black" for i in
                                        df_filtered.name]
 
-        return df
+        return df_filtered
 
     if data_business_key == 'Coke':
 

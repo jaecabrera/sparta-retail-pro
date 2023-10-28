@@ -66,7 +66,7 @@ def notify_email():
 
 @flow()
 def transform():
-    # clean_dates()
+    clean_dates()
     clean_transform_dates()
     prep_requirements()
 
@@ -125,10 +125,9 @@ def clean_transform_dates():
 def prep_requirements():
     analytics_df = transform_analytics(PARQUET_PATH)
     analytics_df.to_csv("data/analytics/client_pepsi_coke.csv")
-    ic(analytics_df.brand.value_counts())
     print("[Tableau Linked] Analytics data successfully created.")
 
 
 if __name__ == '__main__':
-    # start_extract()
+    start_extract()
     transform()

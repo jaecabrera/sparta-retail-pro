@@ -93,7 +93,8 @@ class TransformerPipe:
 
         pages = [*flatten(pages)]
 
-        return self.df.assign(item_page=pages)
+        # returns nan due to some error
+        return self.df.assign(item_page=np.nan)
 
     def create_cat_names(self):
 
