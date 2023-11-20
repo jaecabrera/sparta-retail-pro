@@ -57,7 +57,10 @@ def start_extract():
 
 
 @task
-def notify_email():
+def notify_email() -> None:
+    """
+    Notify email address of the collected data.
+    """
     print('email-notified')
     email_params = EmailParams(subject="Lagoon: Market Report")
     data_table = get_facet(TEMP_PATH)
@@ -65,7 +68,11 @@ def notify_email():
 
 
 @flow()
-def transform():
+def transform() -> None:
+    """
+    Transformation flow that includes cleaning and transforming dates. +
+    Preparing the data for business requirements.
+    """
     clean_dates()
     clean_transform_dates()
     prep_requirements()
@@ -73,7 +80,7 @@ def transform():
 
 @task
 def clean_dates():
-    # update manager class
+
     manager = UpdateManager(COLLECTION_PATH, DATE_COLLECTION_PATH).get_updates()
 
     updated_data_list = [manager]
@@ -82,21 +89,20 @@ def clean_dates():
         m.insert_date
         m.dump()
 
-    ic(pd.Series(updated_data_list, name='market_collection') \
-       .to_frame())
-
 
 @task
-def clean_transform_dates():
+def clean_transform_dates() -> None:
+    """
+    Clean and transform the updated dataframe with dates. This
+    function includes filtering and extracting the food & beverage category.
+    """
     # read updated data
     df = read_updated()
 
     # create path variable of all data collected and create data collection variable dataframe.
-    # data_collection_path = [i for i in COLLECTION_PATH.iterdir() if i.suffix == '.csv']
     updated_df = get_updated_dataframe(df)
 
     # problems with clean transform either NoneType data or invalid path.
-    ic(updated_df)
     clt = clean_transform(updated_df).assemble_data()
 
     # read previous data
@@ -123,6 +129,9 @@ def clean_transform_dates():
 
 @task
 def prep_requirements():
+    """
+    Export and transform data based on client specifications.
+    """
     analytics_df = transform_analytics(PARQUET_PATH)
     analytics_df.to_csv("data/analytics/client_pepsi_coke.csv")
     print("[Tableau Linked] Analytics data successfully created.")

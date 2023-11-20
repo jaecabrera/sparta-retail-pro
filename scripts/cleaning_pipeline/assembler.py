@@ -7,10 +7,9 @@ class DataAssembler:
     """
     :pipeline:
     :description:
-            Data Assembler Class is an object that can organize the clean transformed data.
+            Data Assembler Class is a class object that can organize the clean transformed data.
         The reason for this is to carefully assemble and reclean the features to
         preserve data integrity all throughout the process.
-
     """
 
     def __init__(self, dataframe):
