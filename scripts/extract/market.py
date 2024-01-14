@@ -1,40 +1,29 @@
 import logging
 import os
-from dotenv import load_dotenv
+import sys
+import time
 from configparser import SectionProxy
 from dataclasses import dataclass
-from typing import Generator, List, Any
 from pathlib import Path
+from typing import Generator, List, Any
 
 import numpy as np
 import pandas as pd
 import requests
+from dotenv import load_dotenv
 from numpy.typing import NDArray
 
-from .sgtime import now as sgtz
 from .manager import PathDefaults
+from .sgtime import now as sgtz
 
 logging.basicConfig(format='%(asctime)s | %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
-
 
 load_dotenv('../.env')
 
 CONFIG_PATH = Path(os.getenv("CONFIG_PATH"))
 TEMP_PATH = Path(os.getenv("TEMP_PATH"))
 COLLECTION_PATH = Path(os.getenv("COLLECTION_PATH"))
-
-
-# def load_config(paths: PathDefaults) -> SectionProxy | Any:
-#     """
-#     :description:
-#             Loads the configuration file request_config.ini to be used
-#         for our main market query.
-#     param path_manager: Path manage config on default paths.
-#     :return:
-#     """
-#     request_config = paths.parse_market_params()
-#     return request_config
 
 
 @dataclass
@@ -94,10 +83,12 @@ class ShopRequest:
         """
         import json
         self.data = []
-
+        session = requests.Session()
+        headers = {"x-api-source": "pc", "af-ac-enc-dat": "null"}
+        session.headers.update(headers)
         for page_links in self.compile_request():
-            r = requests.get(page_links)
-            open(TEMP_PATH / "data_temp-data.txt", 'wb')\
+            r = session.get(page_links, headers=headers)
+            open(TEMP_PATH / "data_temp-data.txt", 'wb') \
                 .write(r.content)
 
             with open(TEMP_PATH / "data_temp-data.txt", 'rb') as dict_obj:
@@ -114,51 +105,58 @@ class ShopRequest:
         :description:
         :return: Generator Object
         """
-        for data in self.data[:max_pages]:
-            try:
-                for entry in data['data']['items']:
-                    val = entry['item_basic']
-                    yield {
-                        'date_collected': sgtz(),
-                        'itemid': val['itemid'],
-                        'shopid': val['shopid'],
-                        'category': val['catid'],
-                        'name': val['name'],
-                        'pack_size': val['pack_size'],
-                        'price_before_discount': val['price_before_discount'],
-                        'price_min': val['price_min'],
-                        'price_max': val['price_max'],
-                        'raw_discount': val['raw_discount'],
-                        'discount': val['discount'],
-                        'brand': val['brand'],
-                        'like_count': val['liked_count'],
-                        'comment_count': val['cmt_count'],
-                        'views': val['view_count'],
-                        'prod_rate_star_0': val['item_rating']['rating_count'][5],
-                        'prod_rate_star_1': val['item_rating']['rating_count'][4],
-                        'prod_rate_star_2': val['item_rating']['rating_count'][3],
-                        'prod_rate_star_3': val['item_rating']['rating_count'][2],
-                        'prod_rate_star_4': val['item_rating']['rating_count'][1],
-                        'prod_rate_star_5': val['item_rating']['rating_count'][0],
-                        'product_total_rating': val['item_rating']['rating_star'],
-                        'stock': val['stock'],
-                        'units_sold': val['historical_sold'],
-                        'status': val['status'],
-                        'low_price_guarantee': val['has_lowest_price_guarantee'],
-                        'shop_location': val['shop_location'],
-                        'shop_is_on_flash_sale': val['is_on_flash_sale'],
-                        'shop_is_preferred_plus_seller': val['is_preferred_plus_seller'],
-                        'feature_lowest_price_guarantee': val['has_lowest_price_guarantee'],
-                        'feature_can_use_bundle_deal': val['can_use_bundle_deal'],
-                        'feature_can_use_cod': val['can_use_cod'],
-                        'feature_can_use_wholesale': val['can_use_wholesale'],
-                        'feature_show_free_shipping': val['show_free_shipping'],
-                        'product_image_variation': val['images'],
-                        'product_text_variation': val['tier_variations'],
-                    }
-            except TypeError:
-                print("None")
-                continue
+        try:
+            for data in self.data[:max_pages]:
+                try:
+                    for entry in data['data']['items']:
+                        val = entry['item_basic']
+                        yield {
+                            'date_collected': sgtz(),
+                            'itemid': val['itemid'],
+                            'shopid': val['shopid'],
+                            'category': val['catid'],
+                            'name': val['name'],
+                            'pack_size': val['pack_size'],
+                            'price_before_discount': val['price_before_discount'],
+                            'price_min': val['price_min'],
+                            'price_max': val['price_max'],
+                            'raw_discount': val['raw_discount'],
+                            'discount': val['discount'],
+                            'brand': val['brand'],
+                            'like_count': val['liked_count'],
+                            'comment_count': val['cmt_count'],
+                            'views': val['view_count'],
+                            'prod_rate_star_0': val['item_rating']['rating_count'][5],
+                            'prod_rate_star_1': val['item_rating']['rating_count'][4],
+                            'prod_rate_star_2': val['item_rating']['rating_count'][3],
+                            'prod_rate_star_3': val['item_rating']['rating_count'][2],
+                            'prod_rate_star_4': val['item_rating']['rating_count'][1],
+                            'prod_rate_star_5': val['item_rating']['rating_count'][0],
+                            'product_total_rating': val['item_rating']['rating_star'],
+                            'stock': val['stock'],
+                            'units_sold': val['historical_sold'],
+                            'status': val['status'],
+                            'low_price_guarantee': val['has_lowest_price_guarantee'],
+                            'shop_location': val['shop_location'],
+                            'shop_is_on_flash_sale': val['is_on_flash_sale'],
+                            'shop_is_preferred_plus_seller': val['is_preferred_plus_seller'],
+                            'feature_lowest_price_guarantee': val['has_lowest_price_guarantee'],
+                            'feature_can_use_bundle_deal': val['can_use_bundle_deal'],
+                            'feature_can_use_cod': val['can_use_cod'],
+                            'feature_can_use_wholesale': val['can_use_wholesale'],
+                            'feature_show_free_shipping': val['show_free_shipping'],
+                            'product_image_variation': val['images'],
+                            'product_text_variation': val['tier_variations'],
+                        }
+                except TypeError:
+                    print("None")
+                    continue
+
+        except KeyError as e:
+            if self.data[0]['error'] == 90309999:
+                print("ShopeeAPI(ErrorCode): 90309999")
+                time.sleep(3)
+                sys.exit()
 
     def save_to_csv(self) -> None:
         """

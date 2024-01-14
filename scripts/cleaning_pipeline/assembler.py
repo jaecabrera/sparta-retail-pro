@@ -36,7 +36,7 @@ class DataAssembler:
             'can_use_wholesale', 'show_free_shipping']
 
     def __repr__(self):
-        ...
+        pass
 
     def assemble_data(self) -> list:
         import pandas as pd
@@ -66,6 +66,5 @@ class DataAssembler:
             'prod_rate_star_5': 'star_5',
             'product_total_rating': 'rating'})
 
-        # temporary remove date names
         # select dataframe based on features
         return pd.concat([self.basic_df, self.selling_df, self.rating_df], axis=1)

@@ -54,6 +54,9 @@ def start_extract():
         request_config=path_default.parse_market_params())
 
     notify_email()
+    clean_dates()
+    clean_transform_dates()
+    prep_requirements()
 
 
 @task
@@ -67,20 +70,8 @@ def notify_email() -> None:
     send_emails(email_params, data_table)
 
 
-@flow()
-def transform() -> None:
-    """
-    Transformation flow that includes cleaning and transforming dates. +
-    Preparing the data for business requirements.
-    """
-    clean_dates()
-    clean_transform_dates()
-    prep_requirements()
-
-
 @task
 def clean_dates():
-
     manager = UpdateManager(COLLECTION_PATH, DATE_COLLECTION_PATH).get_updates()
 
     updated_data_list = [manager]
@@ -139,4 +130,3 @@ def prep_requirements():
 
 if __name__ == '__main__':
     start_extract()
-    transform()

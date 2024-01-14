@@ -1,5 +1,6 @@
 # A data transformation script for clients: e.g. Quaker
 import os
+import re
 from pathlib import Path
 from typing import Tuple, Any, List, Dict
 
@@ -7,7 +8,6 @@ import janitor
 import pandas as pd
 import pandas_flavor as pf
 from pandas import DataFrame
-import re
 
 
 def transform_analytics(parquet_path: Path) \
@@ -69,37 +69,8 @@ def expand_datetime(df) \
     return df
 
 
-def get_diff_units_sold(quaker_dataframe: pd.DataFrame) \
-        -> None:
-    """
-    Create a new series as difference for units_sold feature, similar
-    to a running total.
-    :param quaker_dataframe: Filtered Dataframe from load_parquet_file
-    :type quaker_dataframe: Pandas DataFrame
-    """
-    all_quaker_items = quaker_dataframe.itemid.unique()
-
-    def calculate_difference(df, item_id) \
-            -> None:
-        """
-
-        :param df:
-        :param item_id:
-        """
-        filtered_data = df[df.itemid == item_id]
-        idx_filtered_data = filtered_data.index.to_list()
-        sorted_data = filtered_data.sort_values('date')
-        units_sold_diff = sorted_data.units_sold.diff()
-        df.loc[idx_filtered_data, 'units_sold_diff'] = units_sold_diff
-
-    for i in all_quaker_items:
-        calculate_difference(quaker_dataframe, i)
-
-
 def create_product_name(df: pd.DataFrame, data_business_key: str):
-
     if data_business_key == 'Pepsi':
-
         pepsi_products = ["Regular Soda", "Black"]
         df_filtered = df[df.name.str.contains('Pepsi')].reset_index(drop=True)
         df_filtered['product_name'] = [pepsi_products[0] if re.search(pepsi_products[0], i) else "Pepsi Black" for i in
@@ -108,7 +79,6 @@ def create_product_name(df: pd.DataFrame, data_business_key: str):
         return df_filtered
 
     if data_business_key == 'Coke':
-
         coke_products = {
             "Coca-Cola No Sugar": "No Sugar",
             "Coca-Cola Zero Sugar": "No Sugar",
