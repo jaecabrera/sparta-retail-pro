@@ -1,3 +1,4 @@
+![header_logo](https://drive.google.com/uc?export=view&id=1BWk6rVHO8R8PcNrbat7ETdJBQsORSJ3l)
 ## eCommerce Retail Data Science pipeline
 #### Data service for retailers and manufacturers
 > *As of Jan. 2024, collection from ecommerce site is halted due to the need fo API Authorization and tightened security measures on their end.*
